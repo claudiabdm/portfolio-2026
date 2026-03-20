@@ -21,7 +21,16 @@
   type FaceParts = (typeof ids)[number];
   type FaceElements = Record<FaceParts, { elem: SVGElement; rect: DOMRect }>;
 
-  document.addEventListener("astro:page-load", initAvatar);
+  document.addEventListener("astro:page-load", init);
+
+  function init() {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    mediaQuery.addEventListener("change", () => {
+      if (!mediaQuery.matches) {
+        initAvatar();
+      }
+    });
+  }
 
   async function initAvatar() {
     const svg = document.getElementById("avatar");
@@ -417,6 +426,9 @@
 
     #person {
       opacity: 0;
+      @media (prefers-reduced-motion: reduce) {
+        opacity: 1;
+      }
     }
 
     #person,

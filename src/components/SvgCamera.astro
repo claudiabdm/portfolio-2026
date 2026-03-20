@@ -7,7 +7,7 @@ const { class: className } = Astro.props;
 ---
 
 <svg
-  class={className}
+  class:list={["svg-camera", className]}
   viewBox="0 10 65 45"
   fill="none"
 >
@@ -407,6 +407,10 @@ const { class: className } = Astro.props;
 
 <style lang="scss">
   @use "sass:math";
+
+  .svg-camera {
+    overflow: visible;
+  }
 
   .camera {
     animation: lighten var(--spring-elastic-duration) 0.5s var(--spring-elastic) infinite;
