@@ -1,0 +1,18 @@
+@use "./breakpoints" as *;
+
+:root {
+    --icon-s: 12px;
+    --icon-m: 32px;
+    --icon-l: 48px;
+    --screen-s: #{$screen-s};
+    --screen-m: #{$screen-m};
+    --screen-l: #{$screen-l};
+    --max-width: var(--screen-l);
+    --border-radius: 10px;
+    --border-radius-s: 5px;
+    --border-width: 2px;
+    --border: var(--border-width) solid var(--stroke);
+    --border-s: 1px solid var(--stroke);
+    --shadow-offset-y: 4px;
+    --shadow: 0px var(--shadow-offset-y) 0 var(--stroke);
+}

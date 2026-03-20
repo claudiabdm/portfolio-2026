@@ -1,0 +1,132 @@
+---
+import { getCollection } from "astro:content";
+import SvgIcon from "./SvgIcon.astro";
+import { type Language } from "@i18n/ui";
+import { getLangFromUrl } from "@i18n/utils";
+import { removeSlash } from "@lib/utils/pathname";
+
+const languages = await getCollection("Languages");
+const pages = await getCollection("Pages");
+const currentLang = getLangFromUrl(Astro.url);
+
+const pathname = removeSlash(Astro.url.pathname);
+
+const currentPageId = pages
+  .find((page) => page.data.slug === pathname)
+  ?.data.id.replace(`-${currentLang}`, "");
+
+const translatedRoutes = languages.reduce(
+  (acc, lang) => {
+    const translatedPage = pages.find(
+      (page) => page.data.id === `${currentPageId}-${lang.data.lang}`,
+    );
+    if (translatedPage) {
+      acc[lang.data.lang] = translatedPage.data.slug;
+    }
+    return acc;
+  },
+  {} as Record<Language, string>,
+);
+
+const translatedRoutesJSON = JSON.stringify(translatedRoutes);
+
+const isSelected = (lang: Language) => {
+  return lang === currentLang;
+};
+---
+
+<script>
+  import { navigate } from "astro:transitions/client";
+  document.addEventListener("astro:page-load", initLangSwitch);
+
+  function initLangSwitch() {
+    const langSwitch = document.getElementById("language") as HTMLSelectElement | null;
+    const routes = JSON.parse(langSwitch?.dataset.i18nRoute || "null");
+    langSwitch?.addEventListener("change", () => {
+      const value = langSwitch.value;
+      navigate(routes[value] || "/");
+    });
+  }
+</script>
+
+<div class="lang-switch border">
+  <SvgIcon
+    class="lang-switch__icon lang-switch__globe"
+    name="globe"
+    size="s"
+  />
+  <label
+    for="language"
+    class="sr-only"
+    >Choose a language:
+  </label>
+  <select
+    id="language"
+    class="lang-switch__select"
+    name="language"
+    data-i18n-route={translatedRoutesJSON}
+  >
+    {
+      languages.map((lang) => (
+        <option
+          class="lang-switch__opt"
+          value={lang.data.lang}
+          selected={isSelected(lang.data.lang)}
+        >
+          {lang.data.lang.toUpperCase()}
+        </option>
+      ))
+    }
+  </select>
+  <SvgIcon
+    class="lang-switch__icon lang-switch__arrow"
+    name="arrow-down"
+    size="s"
+  />
+</div>
+
+<style lang="scss" is:global>
+  .lang-switch {
+    --padding-x: 10px;
+    --padding-y: 4px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--padding-y);
+    width: var(--header-button-w);
+    height: var(--header-button-h);
+    background-color: var(--secondary);
+    font-family: var(--font-family-secondary);
+
+    &:hover,
+    & *:hover {
+      cursor: pointer;
+    }
+
+    &__icon {
+      position: absolute;
+      pointer-events: none;
+    }
+    &__globe {
+      top: calc(var(--border-width) * 2 + var(--padding-y) * 2);
+    }
+    &__arrow {
+      bottom: calc(var(--border-width) * 2 + var(--padding-y) * 2);
+    }
+    &__select {
+      height: 100%;
+      width: 100%;
+      padding: var(--padding-x);
+      border: var(--border);
+      border-radius: calc(var(--border-radius) - var(--padding-y));
+      background-color: var(--background-lighter);
+      color: var(--stroke);
+      font-size: 16px;
+      text-transform: uppercase;
+      text-align: center;
+      appearance: none;
+    }
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+import RichText from "@components/RichText.astro";
+import SvgAvatar from "@components/SvgAvatar.astro";
+import Title from "@components/Title.astro";
+import type { BlockHero, BlockHeroTranslation } from "@lib/directus/types";
+
+type Props = BlockHeroTranslation;
+
+const { headline, text } = Astro.props;
+---
+
+<section class="hero">
+  <Title
+    level="h1"
+    class="hero__title"
+  >
+    {headline}
+  </Title>
+
+  <SvgAvatar />
+
+  <RichText
+    class="hero__subtitle"
+    text={text}
+  />
+</section>
+
+<style lang="scss" is:global>
+  @use "styles/_breakpoints" as *;
+
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    height: calc(100svh - var(--navbar-total-height) * 3);
+    text-align: center;
+
+    &__title {
+      flex-shrink: 0;
+      font-size: var(--font-4);
+    }
+    &__subtitle {
+      flex-shrink: 0;
+      padding: 0 0 var(--space-xl);
+      max-width: var(--screen-m);
+      font-weight: 500;
+      text-align: center;
+      text-wrap: balance;
+      font-size: var(--font-1);
+    }
+  }
+</style>

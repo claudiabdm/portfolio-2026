@@ -1,0 +1,200 @@
+---
+import ImageSmart from "@components/ImageSmart.astro";
+import Link from "@components/Link.astro";
+import Title from "@components/Title.astro";
+import type { BlockProject, BlockProjectTranslation } from "@lib/directus/types";
+
+type Props = BlockProject & BlockProjectTranslation;
+
+const { name, title, image, description, live_url, code_url, tags } = Astro.props;
+---
+
+<article class="project space-children">
+  <div class="project__media">
+    <figure class="window border">
+      <div class="window__header">
+        <svg
+          class="window__buttons"
+          viewBox="0 0 42 18"
+          width="42"
+          height="18"
+        >
+          <circle
+            stroke-width="2"
+            stroke="currentColor"
+            r="4"
+            cy="9"
+            cx="6"
+          ></circle>
+          <circle
+            stroke-width="2"
+            stroke="currentColor"
+            r="4"
+            cy="9"
+            cx="20"
+          ></circle>
+          <circle
+            stroke-width="2"
+            stroke="currentColor"
+            r="4"
+            cy="9"
+            cx="34"
+          ></circle>
+        </svg>
+        <span class="window__title">{title}</span>
+      </div>
+
+      {
+        image ? (
+          <ImageSmart
+            class="window__image"
+            file={image}
+            alt={`Screenshot of ${title} project.`}
+            widths={[320, 480, 720]}
+            width={1280}
+            height={1280 / 1.6}
+            fit="cover"
+            position="left top"
+            quality={50}
+            isDirectusFile
+          />
+        ) : (
+          <div class="window__image" />
+        )
+      }
+    </figure>
+  </div>
+
+  <div class="project__content space-children">
+    <Title
+      level="h2"
+      class="project__title"
+    >
+      {title || name}
+    </Title>
+
+    <p class="project__description">{description}</p>
+
+    <ul class="project__tags">
+      {tags?.map((tag) => <li class="project__tag border">{tag}</li>)}
+    </ul>
+
+    <div class="project__links">
+      <Link href={live_url ?? ""}>Live</Link>
+      <Link href={code_url ?? ""}>Code</Link>
+    </div>
+  </div>
+</article>
+
+<style lang="scss" is:global>
+  @use "styles/_breakpoints" as *;
+  .project {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    &__media {
+      border-radius: var(--border-radius);
+      background-color: var(--stroke);
+    }
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    &__title {
+      font-size: var(--font-2);
+    }
+
+    &__links {
+      display: flex;
+      align-items: center;
+    }
+
+    &__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2xs);
+      margin-bottom: auto;
+    }
+
+    &__tag {
+      border: var(--border);
+      border-radius: var(--border-radius-s);
+      padding: var(--space-3xs) var(--space-2xs);
+      color: var(--stroke);
+      background-color: var(--background-lighter);
+      font-family: var(--font-family-secondary);
+      font-size: var(--font--2);
+      font-weight: 500;
+      line-height: 1em;
+    }
+
+    // List view
+    @media screen and (min-width: $screen-l) {
+      input[id="projectsViewToggle"]:checked ~ .projects__list & {
+        display: grid;
+        grid-template-columns: var(--min-width) auto;
+        align-items: center;
+        justify-content: flex-start;
+        gap: var(--space-l);
+
+        &__media {
+          aspect-ratio: auto 16 / 10;
+        }
+        &__content {
+          display: flex;
+          justify-content: center;
+          height: unset;
+        }
+
+        &__links {
+          justify-content: flex-end;
+        }
+      }
+    }
+  }
+
+  .window {
+    margin-bottom: var(--shadow-offset-y);
+    color: var(--shadow);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+
+    &__header {
+      --icons-buttons-width: 42px;
+      display: flex;
+      align-items: center;
+      border-bottom: var(--border);
+      padding: var(--space-3xs);
+      height: var(--space-m);
+      background-color: var(--background-lighter);
+    }
+
+    &__buttons {
+      width: var(--icons-buttons-width);
+      height: 100%;
+
+      circle {
+        fill: var(--tertiary);
+        color: var(--stroke);
+      }
+    }
+
+    &__title {
+      width: 100%;
+      margin-right: var(--icons-buttons-width);
+      color: var(--stroke);
+      text-align: center;
+      font-family: var(--font-family-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &__image {
+      aspect-ratio: auto 16 / 10;
+      background-color: var(--white);
+    }
+  }
+</style>

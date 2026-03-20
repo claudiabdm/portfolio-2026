@@ -1,0 +1,65 @@
+---
+import { parse } from "node-html-parser";
+import type { IconName } from "@lib/types/icon-names";
+
+interface Props {
+  name: IconName;
+  size?: "s" | "m" | "l" | "full";
+  class?: string;
+  isNavIcon?: boolean;
+}
+const { name, size, class: className } = Astro.props;
+
+const iconPath = `/src/assets/icons/${name}.svg`;
+const icons = import.meta.glob<{ default: string }>("/src/assets/icons/*.svg", {
+  query: "?raw",
+  eager: true,
+});
+
+if (!(iconPath in icons)) {
+  throw new Error(`${iconPath} not found`);
+}
+
+const iconFile = icons[iconPath].default;
+const root = parse(iconFile);
+
+const svg = root.querySelector("svg");
+
+if (!svg) {
+  throw new Error(`SVG from ${iconPath} undefined`);
+}
+
+const { attributes, innerHTML } = svg;
+---
+
+<svg
+  {...attributes}
+  class:list={["icon", { [`icon--${size}`]: Boolean(size) }, className]}
+  set:html={innerHTML}
+/>
+
+<style lang="scss" is:global>
+  .icon {
+    display: flex;
+    align-items: center;
+    width: var(--icon-size, var(--icon-m));
+    height: var(--icon-size, var(--icon-m));
+
+    &--full {
+      width: 100%;
+      height: 100%;
+    }
+
+    &--s {
+      --icon-size: var(--icon-s);
+    }
+
+    &--m {
+      --icon-size: var(--icon-m);
+    }
+
+    &--l {
+      --icon-size: var(--icon-l);
+    }
+  }
+</style>

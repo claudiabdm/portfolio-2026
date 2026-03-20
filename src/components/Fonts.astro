@@ -1,0 +1,17 @@
+---
+import nunitoVariable from "@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2";
+import firaCodeVariable from "@fontsource-variable/fira-code/files/fira-code-latin-wght-normal.woff2";
+const fonts = [nunitoVariable, firaCodeVariable] as string[];
+---
+
+{
+  fonts.map((url) => (
+    <link
+      rel="preload"
+      href={url}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  ))
+}

@@ -1,0 +1,71 @@
+---
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+
+const words = ["Claudia", "from Spain", "a dev"];
+const totalLength = words.reduce((acc, curr) => (acc += curr.length), 0);
+
+const keyframes = [];
+let count = 0;
+for (let w = 0; w < words.length; w++) {
+  const word = words[w];
+
+  for (let i = 0; i < word.length + 1; i++) {
+    const char = word.slice(0, i);
+    const charPercentageUp = count + (i / totalLength) * 20;
+    const keyframeUp = {
+      perc: charPercentageUp,
+      kf: `${charPercentageUp.toFixed(2)}% { content: "${char}"; }\n`,
+    };
+    keyframes.push(keyframeUp);
+  }
+
+  const plateau = count + (word.length / totalLength) * 60;
+  keyframes.push({
+    perc: plateau,
+    kf: `${plateau.toFixed(2)}% { content: "${word}"; }\n`,
+  });
+
+  for (let i = word.length; i > 0; i--) {
+    const char = word.slice(0, word.length - i);
+    const charPercentageUp = plateau + (i / totalLength) * 20;
+    const keyframeUp = {
+      perc: charPercentageUp,
+      kf: `${charPercentageUp.toFixed(2)}% { content: "${char}"; }\n`,
+    };
+    keyframes.push(keyframeUp);
+  }
+  count += (word.length / totalLength) * 100;
+}
+
+keyframes.sort((a, b) => a.perc - b.perc);
+
+const textAnimationName = `typed-${crypto.randomUUID()}`;
+const keyframesString = keyframes.reduce((acc, curr) => (acc += curr.kf), "");
+---
+
+<span
+  class="typed"
+  aria-label={text}
+>
+</span>
+
+<style
+  set:html={`
+  @keyframes ${textAnimationName} {
+    ${keyframesString}
+  }
+`}
+></style>
+
+<style lang="scss" define:vars={{ textAnimationName }}>
+  .typed {
+    &::before {
+      content: "";
+      animation: var(--textAnimationName) 6s linear infinite;
+    }
+  }
+</style>

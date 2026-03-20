@@ -1,0 +1,61 @@
+---
+import "@styles/global.scss";
+
+import Fonts from "@components/Fonts.astro";
+import { getLangFromUrl } from "@i18n/utils";
+
+import type { CollectionEntry } from "astro:content";
+
+import HeadMeta from "@components/HeadMeta.astro";
+import HeadThemeSwitchScript from "@components/HeadThemeSwitchScript.astro";
+import Header from "@components/Header.astro";
+import HeadPWA from "@components/HeadPWA.astro";
+import { ClientRouter } from "astro:transitions";
+
+const lang = getLangFromUrl(Astro.url);
+
+type Props = Pick<
+  CollectionEntry<"Pages">["data"],
+  "description" | "title" | "image" | "lang" | "name" | "slug"
+>;
+
+const props = Astro.props;
+---
+
+<html lang={lang}>
+  <head>
+    <HeadMeta {...props} />
+    <Fonts />
+    <HeadThemeSwitchScript />
+    <HeadPWA />
+    <ClientRouter />
+  </head>
+  <body>
+    <Header {...props} />
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style lang="scss" is:global>
+  :root {
+    view-transition-name: none;
+  }
+
+  ::view-transition {
+    pointer-events: none;
+  }
+
+  // Enable native view transitions for navigation
+  // works with JavaScript disabled
+  @view-transition {
+    navigation: auto;
+  }
+
+  main {
+    margin: 0 auto;
+    padding: var(--space-m) 0 var(--navbar-total-height) 0;
+    max-width: var(--max-width);
+  }
+</style>

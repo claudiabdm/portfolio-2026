@@ -1,0 +1,71 @@
+---
+import Figure from "@components/Figure.astro";
+import Link from "@components/Link.astro";
+import SvgError from "@components/SvgError.astro";
+import Title from "@components/Title.astro";
+import { getLangFromUrl } from "@i18n/utils";
+import Page from "@layouts/Page.astro";
+import type { ComponentProps } from "astro/types";
+import { getEntry } from "astro:content";
+
+const props: ComponentProps<typeof Page> = {
+  name: "404",
+  title: "404",
+  slug: "",
+  description: "Page not found",
+  lang: getLangFromUrl(Astro.url),
+  image: "",
+};
+
+const lang = getLangFromUrl(Astro.url);
+
+const error404 = (await getEntry("Translations", `error404-${lang}`))?.data.value ?? "";
+const backToHome = (await getEntry("Translations", `backToHome-${lang}`))?.data.value ?? "";
+---
+
+<Page {...props}>
+  <section class="page-404 space-children">
+    <figure class="page-404__error">
+      <SvgError />
+    </figure>
+    <Title
+      class="page-404__title"
+      level="h2"
+      >Oh no!</Title
+    >
+    <p class="space-children">
+      <span>
+        {error404}
+      </span>
+      <Link
+        class="page-404__link"
+        href="/"
+      >
+        {backToHome}
+      </Link>
+    </p>
+  </section>
+</Page>
+
+<style lang="scss" is:global>
+  .page-404 {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-width: 60ch;
+    text-align: center;
+    text-wrap: balance;
+    margin-top: var(--space-3);
+    margin-left: auto;
+    margin-right: auto;
+
+    &__title {
+      font-size: var(--font-4);
+    }
+    &__link {
+      width: max-content;
+      margin-inline: auto;
+    }
+  }
+</style>

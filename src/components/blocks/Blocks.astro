@@ -1,0 +1,32 @@
+---
+import { snakeCasetoPascalCase } from "@lib/utils/casing";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  blocks: { sort: number; collection: string }[];
+  meta: Omit<CollectionEntry<"Pages">["data"], "blocks">;
+}
+const { blocks, meta } = Astro.props;
+const componentBlocks = import.meta.glob("@components/blocks/*.astro", {
+  eager: true,
+});
+
+const mapped = await Promise.all(
+  blocks.map(async (block) => {
+    const componentName = snakeCasetoPascalCase(block.collection);
+    return {
+      component: componentBlocks[`/src/components/blocks/${componentName}.astro`],
+      props: block,
+    };
+  }),
+);
+---
+
+{
+  mapped.map((block: any) => (
+    <block.component.default
+      {...block.props}
+      meta={meta}
+    />
+  ))
+}

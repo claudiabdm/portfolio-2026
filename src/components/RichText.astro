@@ -1,0 +1,200 @@
+---
+import { Marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
+import javascript from "highlight.js/lib/languages/javascript";
+import typescript from "highlight.js/lib/languages/typescript";
+import xml from "highlight.js/lib/languages/xml";
+import scss from "highlight.js/lib/languages/scss";
+import "highlight.js/styles/github.css";
+import type { ImageMetadata } from "astro";
+
+hljs.registerLanguage("javascript", javascript);
+hljs.registerLanguage("typescript", typescript);
+hljs.registerLanguage("xml", xml);
+hljs.registerLanguage("scss", scss);
+
+interface Props {
+  text: string | undefined | null;
+  class: string;
+}
+
+const { text, class: className } = Astro.props;
+
+const files = import.meta.glob<{ default: ImageMetadata }>(`/src/assets/directus/*`, {
+  eager: true,
+});
+const images = Object.keys(files).reduce(
+  (acc, curr) => {
+    const withoutExtension = curr.split(".")[0];
+    acc[withoutExtension] = files[curr].default.src;
+    return acc;
+  },
+  {} as Record<string, string>,
+);
+
+const marked = new Marked(
+  markedHighlight({
+    emptyLangClass: "hljs",
+    langPrefix: "hljs language-",
+    highlight(code, lang) {
+      const language = hljs.getLanguage(lang) ? lang : "plaintext";
+      return hljs.highlight(code, { language }).value;
+    },
+  }),
+  {
+    renderer: {
+      heading({ text, depth }) {
+        return `<h${depth} class="title-deco">${text}</h${depth}>`;
+      },
+      link({ text, href }) {
+        let target = "_blank";
+        if (href.startsWith("#") || href.startsWith("/")) {
+          target = "_self";
+        }
+        return `<a href=${href} target=${target} rel="noopener noreferrer">${text}</a>`;
+      },
+      image({ text, href }) {
+        href = href.replace(`${import.meta.env.DIRECTUS_URL}/assets`, `/src/assets/directus`);
+        return `<img src=${images[href]} alt="${text}" loading="lazy" />`;
+      },
+    },
+  },
+);
+
+const html = marked.parse(text ?? "");
+---
+
+<div
+  class:list={["rich-text", "space-children", className]}
+  set:html={html}
+/>
+<style lang="scss" is:global>
+  @use "sass:list";
+  .rich-text {
+    $heading-sizes: 4, 3, 2, 1, 1, 1;
+
+    @for $i from 1 through 6 {
+      $size: list.nth($heading-sizes, $i);
+
+      h#{$i} {
+        font-size: var(--font-#{$size});
+        font-family: var(--font-family-secondary);
+      }
+    }
+
+    p {
+      line-height: 1.6;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      margin: var(--space-xl) auto;
+      border-radius: var(--border-radius);
+      border: var(--border);
+    }
+
+    b {
+      font-weight: 700;
+    }
+
+    i {
+      font-style: italic;
+    }
+
+    u {
+      text-decoration-color: var(--secondary);
+      text-decoration-skip-ink: none;
+      text-decoration-thickness: from-font;
+    }
+
+    a {
+      font-weight: 700;
+      text-decoration-line: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: var(--space-3xs);
+      text-decoration-color: var(--tertiary);
+      &:hover {
+        text-decoration-color: var(--secondary);
+      }
+    }
+
+    ul,
+    ol {
+      display: block;
+      margin-block-start: 1em;
+      margin-block-end: 1em;
+      padding-inline-start: var(--space-m);
+    }
+
+    ul {
+      list-style-type: disc;
+    }
+
+    ol {
+      list-style-type: decimal;
+    }
+
+    li {
+      &::marker {
+        color: var(--secondary);
+      }
+    }
+    code:not(.hljs) {
+      border-radius: var(--border-radius-s);
+      border: 1px var(--stroke) solid;
+      padding: 2px 4px;
+      color: var(--stroke);
+      background-color: var(--white);
+      font-size: var(--font--2);
+      opacity: 0.9;
+    }
+  }
+
+  .hljs {
+    margin: 3em auto;
+    border-radius: var(--border-radius);
+    border: var(--border);
+    background-color: var(--stroke);
+    color: var(--white-dark);
+    font-size: 0.875rem;
+    font-family: var(--font-family-secondary);
+
+    &-string {
+      color: var(--purple-dark);
+    }
+    &-keyword,
+    &-name,
+    &-attribute {
+      color: var(--tertiary);
+      font-weight: 700;
+    }
+
+    &-attr,
+    &-number,
+    &-variable,
+    &-title.class_,
+    &-variable.language_ {
+      color: var(--secondary);
+    }
+
+    &-title.function_,
+    &-selector-class,
+    &-selector-pseudo,
+    &-property,
+    &-built_in {
+      color: var(--tertiary);
+    }
+
+    &-built_in,
+    &-property {
+      font-style: italic;
+    }
+
+    &-comment {
+      color: hsl(var(--white-dark-hsl) / 0.5);
+    }
+  }
+</style>

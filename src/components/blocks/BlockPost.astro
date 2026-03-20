@@ -1,0 +1,100 @@
+---
+import DateFormatted from "@components/DateFormatted.astro";
+import RichText from "@components/RichText.astro";
+import Title from "@components/Title.astro";
+import { getLangFromUrl } from "@i18n/utils";
+import { getEntry } from "astro:content";
+
+const { title, info, article, published_on, last_updated_on } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+const publishedText = (await getEntry("Translations", `publishedOn-${lang}`))?.data.value;
+const updatedText = (await getEntry("Translations", `lastUpdated-${lang}`))?.data.value;
+
+const isSameDay = sameDay(new Date(published_on), new Date(last_updated_on));
+
+function sameDay(d1: Date, d2: Date) {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+}
+---
+
+<section class="post space-children">
+  <article class="post__article space-children">
+    <Title
+      class="post__title"
+      level="h2"
+      >{title}
+    </Title>
+
+    <div class="post__meta">
+      {
+        publishedText && (
+          <DateFormatted
+            text={publishedText}
+            date={published_on}
+          />
+        )
+      }
+
+      {
+        !isSameDay && updatedText && (
+          <DateFormatted
+            text={updatedText}
+            date={last_updated_on}
+          />
+        )
+      }
+    </div>
+    <p class="post__info">{info}</p>
+
+    <hr class="post__hr border" />
+
+    <RichText
+      class="post__text"
+      text={article}
+    />
+  </article>
+
+  <style lang="scss" is:global>
+    .post {
+      margin-top: var(--space-xl);
+      margin-bottom: var(--navbar-total-height);
+
+      &__title {
+        font-size: var(--font-2);
+        text-align: center;
+      }
+
+      &__meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2xs);
+        text-align: center;
+      }
+
+      &__info {
+        color: var(--meta);
+        font-size: var(--font-1);
+        text-wrap: balance;
+        text-align: center;
+      }
+
+      &__hr {
+        border-color: var(--secondary);
+        border-width: 1px;
+      }
+
+      &__text {
+        margin-right: auto;
+        margin-left: auto;
+        max-width: 75ch;
+      }
+    }
+  </style>
+</section>

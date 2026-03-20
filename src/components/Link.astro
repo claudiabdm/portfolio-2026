@@ -1,0 +1,74 @@
+---
+import SvgIcon from "@components/SvgIcon.astro";
+
+interface Props {
+  href: string;
+  class?: string;
+  withArrow?: boolean;
+  isActive?: boolean;
+}
+
+const { href, class: className, withArrow = true, isActive } = Astro.props;
+
+const isSelf = href?.startsWith("/");
+const target = isSelf ? "_self" : "_blank";
+---
+
+<a
+  class:list={["link", { "link--active": isActive }, className]}
+  href={href}
+  target={target}
+  rel="noopener noreferrer"
+>
+  <span class="link__text">
+    <slot />
+  </span>
+  {
+    withArrow && (
+      <SvgIcon
+        class="link__arrow"
+        name="arrow-right"
+        size="m"
+      />
+    )
+  }
+</a>
+
+<style lang="scss" is:global>
+  .link {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: currentColor;
+    font-family: var(--font-family-secondary);
+    font-weight: 600;
+    text-decoration: none;
+
+    & + & {
+      margin-left: var(--space-s);
+    }
+
+    &__text {
+      text-decoration-line: underline;
+      text-decoration-style: solid;
+      text-decoration-thickness: 2px;
+      text-underline-offset: var(--space-3xs);
+      text-decoration-color: rgba(0, 0, 0, 0);
+    }
+
+    &--active,
+    &:hover {
+      .link__text {
+        text-decoration-color: var(--secondary);
+      }
+    }
+
+    &__arrow {
+      color: var(--tertiary);
+    }
+
+    &:hover &__arrow {
+      animation: elastic 0.75s linear forwards;
+    }
+  }
+</style>

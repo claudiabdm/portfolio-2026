@@ -1,0 +1,5 @@
+@use "sass:math";
+
+$screen-s: math.div(320, 16) * 1rem;
+$screen-m: math.div(768, 16) * 1rem;
+$screen-l: math.div(1024, 16) * 1rem;

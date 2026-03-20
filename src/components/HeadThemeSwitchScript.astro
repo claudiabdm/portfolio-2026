@@ -1,0 +1,53 @@
+---
+
+---
+
+<script is:inline>
+  initTheme();
+
+  document.addEventListener("astro:after-swap", () => {
+    initTheme();
+  });
+
+  // Initializes theme color to avoid flickering
+  function initTheme() {
+    const savedColorScheme = (() => {
+      const theme = localStorage.getItem("preferredColorScheme");
+
+      if (theme == null) {
+        return "light";
+      }
+
+      if (["dark", "light"].includes(theme)) {
+        return theme;
+      }
+
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      }
+
+      return "light";
+    })();
+
+    toggleTheme(savedColorScheme === "dark");
+
+    // Automatically toggles preferred color scheme
+    const darkColorSchemeMedia = window.matchMedia(`(prefers-color-scheme: dark)`);
+    darkColorSchemeMedia.addEventListener("change", (e) => {
+      toggleTheme(e.matches);
+    });
+  }
+
+  function toggleTheme(isDark) {
+    const root = document.documentElement;
+    if (isDark) {
+      localStorage.setItem("preferredColorScheme", "dark");
+      root?.classList.add("dark-scheme");
+      root?.classList.remove("light-scheme");
+    } else {
+      localStorage.setItem("preferredColorScheme", "light");
+      root?.classList.add("light-scheme");
+      root?.classList.remove("dark-scheme");
+    }
+  }
+</script>

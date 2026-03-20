@@ -1,0 +1,61 @@
+---
+import Page from "@layouts/Page.astro";
+import Blocks from "@components/blocks/Blocks.astro";
+import type { Config, Page as DirectusPage } from "@lib/directus/types";
+import { resolvePageBlocks } from "@lib/directus/scripts/resolve-page-blocks";
+import { groupPageByLang } from "@lib/directus/scripts/group-page-by-lang";
+import { readItem, readItems, readSingleton } from "@directus/sdk";
+import directus from "@lib/directus";
+import { pageSchema } from "../../content.config";
+
+export const prerender = false;
+
+if (!Astro.url.pathname.startsWith("/preview/")) {
+  return Astro.redirect("/");
+}
+
+const id = String(Astro.params.id);
+
+if (!id) {
+  return Astro.redirect("/404");
+}
+
+const languages = await directus.request(readItems("languages"));
+
+const config = await directus.request(readSingleton("config"));
+
+const page = await directus.request(
+  readItem("pages", id, {
+    fields: [
+      "*",
+      // @ts-expect-error
+      "translations.*",
+      // @ts-expect-error
+      "blocks.*",
+    ],
+  }),
+);
+
+if (!page) {
+  return Astro.redirect("/404");
+}
+
+const pageByLang = groupPageByLang(page as DirectusPage, languages, config as Config);
+
+await resolvePageBlocks(page.blocks, pageByLang);
+
+const res = pageSchema.safeParse(pageByLang["en"]);
+
+if (!res || !res.data) {
+  return Astro.redirect("/404");
+}
+
+const { blocks, ...meta } = res.data;
+---
+
+<Page {...meta}>
+  <Blocks
+    blocks={blocks}
+    meta={meta}
+  />
+</Page>

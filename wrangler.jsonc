@@ -1,0 +1,6 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "portfolio-astro",
+  "compatibility_date": "2026-03-17",
+  "pages_build_output_dir": "./dist",
+}

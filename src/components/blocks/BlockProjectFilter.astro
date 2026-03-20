@@ -1,0 +1,163 @@
+---
+import type { BlockProject } from "@lib/directus/types";
+
+type Props = {
+  tags: BlockProject["tags"];
+};
+
+const { tags = [] } = Astro.props;
+---
+
+<form
+  id="projectsFilter"
+  class="projects-filter border"
+  action=""
+>
+  <div class="projects-filter__reset">
+    <div class="projects-filter__inner">
+      <button
+        class="projects-filter__text border"
+        type="reset"
+        name="projects-filter"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <div class="scroll-container">
+    <fieldset class="projects-filter__options">
+      <legend class="sr-only">Choose a technology</legend>
+      {
+        tags?.map((tag) => (
+          <div class="projects-filter__inner">
+            <input
+              class="sr-only"
+              type="checkbox"
+              name="projects-filter"
+              value={tag}
+              id={tag}
+            />
+            <label
+              for={tag}
+              class="projects-filter__text border"
+            >
+              {tag}
+            </label>
+          </div>
+        ))
+      }
+    </fieldset>
+  </div>
+</form>
+
+<style lang="scss" is:global>
+  .scroll-container {
+    width: 100%;
+    overflow: auto;
+  }
+
+  .projects-filter {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 0;
+    width: 100%;
+    max-width: var(--screen-m);
+    background-color: var(--tertiary);
+    font-family: var(--font-family-secondary);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+
+    &__reset {
+      position: relative;
+      display: block;
+      border-radius: 0;
+      border-right: var(--border);
+      padding: var(--space-xs) var(--space-xs) var(--space-2xs);
+      background-color: var(--tertiary);
+
+      &::before {
+        content: "";
+        position: absolute;
+        display: inline;
+        inset: 0;
+        margin: var(--space-xs) var(--space-xs) var(--space-2xs);
+        border-radius: var(--border-radius);
+        background-color: var(--stroke);
+        transform: translateY(-0);
+      }
+
+      .projects-filter__text {
+        &:active {
+          transform: translateY(-1px);
+        }
+        &::before {
+          content: "";
+          display: none;
+        }
+      }
+    }
+
+    &__options {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: var(--space-xs);
+      margin: 0;
+      border: none;
+      padding: var(--space-xs) var(--space-xs) var(--space-2xs);
+      width: 100%;
+    }
+
+    &__inner {
+      border-radius: var(--border-radius);
+      width: max-content;
+      height: 100%;
+      background-color: var(--stroke);
+
+      & > input:checked ~ .projects-filter__text {
+        transform: translateY(-0px);
+        &::before {
+          background-color: var(--secondary);
+        }
+      }
+    }
+
+    &__text {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3xs);
+      inset: 0;
+      padding: var(--space-3xs) var(--space-xs);
+      width: 100%;
+      height: 100%;
+      background-color: var(--background-lighter);
+      color: var(--stroke);
+      user-select: none;
+      transform: translateY(-5px);
+      transition:
+        transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.15s linear;
+
+      &::before {
+        content: "";
+        margin: auto 0;
+        border: var(--border);
+        border-radius: var(--border-radius);
+        width: 12px;
+        height: 12px;
+        background-color: var(--background);
+        transition: background-color 0.15s linear;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          cursor: pointer;
+          transform: translateY(-3px);
+        }
+      }
+    }
+  }
+</style>

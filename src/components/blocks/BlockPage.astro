@@ -1,0 +1,34 @@
+---
+import Blocks from "@components/blocks/Blocks.astro";
+import type { BlockPage } from "@lib/directus/types";
+import type { ComponentProps } from "astro/types";
+
+type Props = ComponentProps<typeof Blocks> & BlockPage;
+
+const { blocks, with_margin_bottom, meta } = Astro.props;
+---
+
+<div class:list={["page", { "page--with-margin-bottom": with_margin_bottom }]}>
+  {
+    blocks && (
+      <Blocks
+        blocks={blocks}
+        meta={meta}
+      />
+    )
+  }
+</div>
+
+<style lang="scss" is:global>
+  @use "styles/_breakpoints" as *;
+
+  .page {
+    &--with-margin-bottom {
+      margin-bottom: var(--navbar-total-height);
+    }
+
+    @media screen and (min-width: $screen-m) {
+      margin-bottom: calc(var(--navbar-total-height) * 2);
+    }
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+import type { IconName } from "@lib/types/icon-names";
+import SvgIcon from "@components/SvgIcon.astro";
+
+const links: Array<{ href: string; name: IconName }> = [
+  {
+    href: "https://github.com/claudiabdm",
+    name: "github",
+  },
+  {
+    href: "https://www.linkedin.com/in/claudiabdm/",
+    name: "linkedin",
+  },
+  {
+    href: "https://bsky.app/profile/claudiabdm.com",
+    name: "bluesky",
+  },
+  {
+    href: "mailto:me@claudiabdm.com",
+    name: "email",
+  },
+];
+---
+
+<div class="social-links border">
+  {
+    links.map((l, i) => (
+      <a
+        class="social-links__link"
+        style={`--nth-child: ${i}`}
+        href={l.href}
+        aria-label={`${l.name} (opens in new tab)`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <SvgIcon
+          name={l.name}
+          size="m"
+        />
+      </a>
+    ))
+  }
+</div>
+
+<style lang="scss" is:global>
+  @use "styles/_breakpoints" as *;
+  @use "sass:math";
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto auto var(--shadow-offset-y) auto;
+    padding: var(--space-3xs);
+    min-width: calc(100% - var(--proportion));
+    width: fit-content;
+    background-color: var(--tertiary);
+    box-shadow: var(--shadow);
+
+    @media screen and (min-width: $screen-m) {
+      margin-right: 0;
+    }
+
+    &__link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      background: none;
+      padding: 0 var(--space-3xs);
+      flex: 1;
+      color: var(--background-lighter);
+
+      &:hover {
+        svg {
+          translate: 0 -2px 0;
+        }
+      }
+
+      svg {
+        width: 32px;
+        height: 32px;
+        transition: translate 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+    }
+  }
+</style>

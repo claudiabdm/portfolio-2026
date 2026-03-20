@@ -1,0 +1,102 @@
+---
+import { getLangFromUrl } from "@i18n/utils";
+import { getEntries } from "astro:content";
+import { getEntry } from "astro:content";
+import Title from "@components/Title.astro";
+import Link from "@components/Link.astro";
+import DateFormatted from "@components/DateFormatted.astro";
+import type { BlockPostList } from "@lib/directus/types";
+
+type Props = Omit<BlockPostList, "posts"> & { posts: Array<{ key: string }> };
+
+const { posts } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+const postPages = posts.map((p) => ({
+  collection: "Pages" as const,
+  id: `${p.key}-${lang}`,
+}));
+const postsEntries = await getEntries<"Pages">(postPages);
+const postsSorted = postsEntries
+  .filter(Boolean)
+  .sort(
+    (a, b) =>
+      new Date(b.data.blocks[0].published_on).getTime() -
+      new Date(a.data.blocks[0].published_on).getTime(),
+  );
+const publishedText = (await getEntry("Translations", `publishedOn-${lang}`))?.data.value;
+---
+
+<div class="posts">
+  <ol class="posts__list space-children">
+    {
+      postsSorted.map((p) => (
+        <li class="posts__item border space-children">
+          <Title
+            class="posts__title"
+            level="h2"
+          >
+            <a href={p.data.slug}>{p.data.blocks[0].title}</a>
+          </Title>
+
+          {publishedText && (
+            <DateFormatted
+              date={p.data.blocks[0].published_on}
+              text={publishedText}
+            />
+          )}
+
+          <p>{p.data.blocks[0].info}</p>
+
+          <Link
+            class="posts__link"
+            href={p.data.slug}
+          >
+            Read more
+          </Link>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style lang="scss" is:global>
+  .posts {
+    color: var(--blue);
+    margin-top: var(--space-xl);
+
+    &__list {
+      margin: auto;
+      max-width: 75ch;
+    }
+
+    & &__title {
+      overflow: unset;
+      a {
+        text-decoration-line: underline;
+        text-decoration-style: solid;
+        text-decoration-thickness: 2px;
+        text-underline-offset: var(--space-3xs);
+        text-decoration-color: rgba(0, 0, 0, 0);
+        &:hover {
+          text-decoration-color: var(--secondary);
+        }
+      }
+    }
+
+    &__item {
+      padding: var(--space-xs) var(--space-s);
+      background-color: var(--background-lighter);
+      box-shadow: var(--shadow);
+
+      .date {
+        color: var(--meta-over-light);
+      }
+    }
+
+    &__link {
+      justify-content: flex-end;
+      width: 100%;
+    }
+  }
+</style>

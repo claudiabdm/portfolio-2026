@@ -1,0 +1,168 @@
+---
+import { getLangFromUrl } from "@i18n/utils";
+import SvgIcon from "./SvgIcon.astro";
+import type { IconName } from "@lib/types/icon-names";
+import { removeSlash } from "@lib/utils/pathname";
+
+interface Props {
+  links: Array<{
+    name: string;
+    href: string;
+    title: string | null;
+    icon: string | null;
+  }>;
+}
+
+const { links } = Astro.props;
+
+const pathname = removeSlash(Astro.url.pathname);
+const lang = getLangFromUrl(Astro.url);
+
+function isLinkActive(link: (typeof links)[number]) {
+  const langPrefix = `/${lang}`;
+  if (pathname.startsWith(langPrefix) && link.href.startsWith(langPrefix)) {
+    const slugWithoutLang = pathname.slice(langPrefix.length);
+    const linkWithoutLang = link.href.slice(langPrefix.length);
+    return linkWithoutLang != "" && slugWithoutLang.startsWith(linkWithoutLang);
+  }
+  return link.href == "/" ? pathname === link.href : pathname?.startsWith(link.href);
+}
+---
+
+<nav class="nav border">
+  <ul class="links">
+    {
+      links.map((link, i) => (
+        <li class="links__item">
+          <a
+            href={link.href}
+            class:list={["links__link", { "links__link--active": isLinkActive(link) }]}
+          >
+            <div
+              class="links__inner"
+              transition:name={`link-item-${i}`}
+            >
+              <span class="links__name sr-only-screen-m">{link.title}</span>
+              <SvgIcon
+                name={link.icon as IconName}
+                class="links__icon"
+              />
+            </div>
+
+            <span
+              class="links__point"
+              transition:name={`link-point-${i}`}
+            />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style lang="scss" is:global>
+  @use "styles/_breakpoints" as *;
+
+  :root {
+    --navbar-icon-size: 42px;
+    --navbar-margin-y: var(--space-xs);
+    --navbar-height: var(--navbar-icon-size);
+    --navbar-total-height: calc(var(--navbar-margin-y) * 2 + var(--navbar-height));
+    --navbar-icon-y: -25%;
+    --navbar-icon-y-hover: -50%;
+    --navbar-icon-y-active: -60%;
+
+    @media screen and (min-width: $screen-m) {
+      --navbar-icon-size: 48px;
+    }
+  }
+
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: var(--navbar-margin-y) auto;
+    width: calc(100% - var(--space-l));
+    max-width: var(--screen-m);
+    height: calc(var(--navbar-height));
+    background-color: var(--secondary);
+    font-family: var(--font-family-secondary);
+    box-shadow: var(--shadow);
+  }
+
+  .links {
+    display: flex;
+
+    &__item {
+      flex: 1;
+    }
+
+    &__link {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    &__point {
+      position: absolute;
+      bottom: 8px;
+      border-radius: 50%;
+      height: 6px;
+      width: 6px;
+      background-color: var(--primary);
+      opacity: 0;
+      transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+
+      .links__link--active & {
+        opacity: 1;
+      }
+    }
+
+    &__inner {
+      display: flex;
+      justify-content: center;
+      transform: translate3d(0, var(--navbar-icon-y), 0);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+
+      .links__link--active & {
+        transform: translate3d(0, var(--navbar-icon-y-active), 0);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .links__link:hover:not(.links__link--active) &,
+        .links__link:active:not(.links__link--active) & {
+          transform: translate3d(0, var(--navbar-icon-y-hover), 0);
+        }
+      }
+    }
+
+    &__icon {
+      --icon-size: var(--navbar-icon-size);
+    }
+
+    &__name {
+      display: block;
+      position: absolute;
+      top: calc(-1 * 32px);
+      border-radius: 8px;
+      padding: 2px 6px;
+      white-space: nowrap;
+      background-color: hsla(var(--background-hsl) / 0.9);
+      text-transform: capitalize;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+
+      @media (hover: hover) and (pointer: fine) {
+        .links__link--active &,
+        .links__link:hover & {
+          opacity: 1;
+        }
+      }
+    }
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import { getCollection } from "astro:content";
+
+import Page from "@layouts/Page.astro";
+import Blocks from "@components/blocks/Blocks.astro";
+
+const isPreview = Astro.url.pathname.startsWith("/preview/");
+if (isPreview) {
+  return Astro.redirect(`/preview/${Astro.params.slug}`);
+}
+
+export async function getStaticPaths() {
+  const pages = await getCollection("Pages");
+  const paths: Array<{
+    params: { slug: string };
+    props: (typeof pages)[number]["data"];
+  }> = [];
+
+  for (const page of pages) {
+    paths.push({ params: { slug: page.data.slug }, props: page.data });
+  }
+
+  return paths;
+}
+
+const { blocks, ...meta } = Astro.props;
+---
+
+<Page {...meta}>
+  <Blocks
+    blocks={blocks}
+    meta={meta}
+  />
+</Page>

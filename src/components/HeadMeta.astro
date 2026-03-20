@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Props = Pick<CollectionEntry<"Pages">["data"], "description" | "title" | "image">;
+
+const { title, description, image } = Astro.props;
+
+const capitalizeTitle = title ? title.charAt(0).toUpperCase() + title.slice(1) : "";
+
+const imageUrl = typeof image === "string" ? image : `${Astro.site?.href}social-card.png`;
+
+const metaTags = [
+  { name: "title", content: title },
+  { name: "description", content: description },
+  {
+    property: "og:image",
+    content: imageUrl,
+  },
+  {
+    property: "og:image:alt",
+    content: "",
+  },
+  {
+    property: "og:title",
+    content: title,
+  },
+  {
+    property: "og:description",
+    content: description,
+  },
+  {
+    name: "twitter:image",
+    content: imageUrl,
+  },
+  {
+    name: "twitter:title",
+    content: title,
+  },
+  {
+    name: "twitter:image:alt",
+    content: "",
+  },
+  {
+    name: "twitter:descrition",
+    content: description,
+  },
+];
+---
+
+<>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width"
+  />
+  <meta
+    name="generator"
+    content={Astro.generator}
+  />
+
+  <title>{capitalizeTitle}</title>
+  {
+    metaTags.map((meta) => {
+      return <meta {...meta} />;
+    })
+  }
+</>

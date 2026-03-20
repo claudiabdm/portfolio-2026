@@ -1,0 +1,96 @@
+@use "sass:map";
+
+$colors: (
+  "blue": "224 63% 25%",
+  "blue-dark": "224 100% 17%",
+  "cyan": "187 55% 71%",
+  "cyan-dark": "187 55% 60%",
+  "white": "42 93% 100%",
+  "white-dark": "42 93% 95%",
+  "purple": "271 54% 83%",
+  "purple-light": "271 54% 83%",
+  "purple-dark": "271 55% 74%",
+  "pink": "337 86% 80%",
+  "pink-dark": "337 85% 74%",
+  "orange": "17 100% 80%",
+  "yellow": "51 84% 80%",
+  "green": "129 60% 85",
+  "gray": "224 25% 95%"
+);
+
+// Change color name to theme UI
+$light-tokens: (
+  "primary": "blue",
+  "secondary": "cyan",
+  "tertiary": "pink",
+  "background": "white-dark",
+  "background-lighter": "white",
+  "stroke": "blue-dark"
+);
+
+$dark-tokens: (
+  "primary": "white-dark",
+  "secondary": "cyan-dark",
+  "tertiary": "pink-dark",
+  "background": "blue",
+  "background-lighter": "white-dark",
+  "stroke": "blue-dark"
+);
+
+:root {
+  color-scheme: light dark;
+  --meta: hsl(var(--primary-hsl) / 0.6);
+  --meta-over-light: hsl(var(--blue-hsl) / 0.6);
+
+  // Add color palette as CSS custom propterties
+  @each $name, $value in $colors {
+    --#{$name}: hsl(#{$value});
+    --#{$name}-hsl: #{$value};
+  }
+
+  // Add tokens as CSS custom propterties
+  @each $name, $value in $light-tokens {
+    --#{$name}: hsl(#{map.get($colors, #{$value})});
+    --#{$name}-hsl: #{map.get($colors, #{$value})};
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    @each $name, $value in $light-tokens {
+      --#{$name}: hsl(#{map.get($colors, #{$value})});
+      --#{$name}-hsl: #{map.get($colors, #{$value})};
+    }
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    @each $name, $value in $dark-tokens {
+      --#{$name}: hsl(#{map.get($colors, #{$value})});
+      --#{$name}-hsl: #{map.get($colors, #{$value})};
+    }
+  }
+  img {
+    filter: sepia(0.15);
+  }
+}
+
+.light-scheme {
+  color-scheme: light;
+  @each $name, $value in $light-tokens {
+    --#{$name}: hsl(#{map.get($colors, #{$value})});
+    --#{$name}-hsl: #{map.get($colors, #{$value})};
+  }
+}
+
+.dark-scheme {
+  color-scheme: dark;
+  @each $name, $value in $dark-tokens {
+    --#{$name}: hsl(#{map.get($colors, #{$value})});
+    --#{$name}-hsl: #{map.get($colors, #{$value})};
+  }
+
+  img {
+    filter: sepia(0.15);
+  }
+}

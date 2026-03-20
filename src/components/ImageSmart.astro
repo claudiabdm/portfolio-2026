@@ -1,0 +1,117 @@
+---
+import { getImageProps } from "@lib/utils/get-image-props";
+import { Image, Picture } from "astro:assets";
+
+type Props = {
+  file: Parameters<typeof getImageProps>[0];
+} & NonNullable<Parameters<typeof getImageProps>[1]>;
+
+const { file, isDirectusFile, ...rest } = Astro.props;
+const { class: className, ...options } = rest;
+
+const astroImageProps = await getImageProps(file, {
+  quality: "max",
+  isDirectusFile,
+  ...options,
+});
+
+const astroPlaceholderImageProps = await getImageProps(file, {
+  isDirectusFile: isDirectusFile,
+  width: 10,
+  height: 10,
+  quality: 20,
+});
+---
+
+<script>
+  export class AstroImageSmart extends HTMLElement {
+    constructor() {
+      super();
+      this._init();
+    }
+
+    _init() {
+      this.updateVisibility();
+    }
+
+    updateVisibility() {
+      const image = this.querySelector(".image-smart__image");
+      const placeholder = this.querySelector(".image-smart__placeholder");
+
+      if (image instanceof HTMLImageElement && placeholder instanceof HTMLImageElement) {
+        const isComplete = image.complete;
+
+        if (isComplete) {
+          this.classList.add("image-start--complete");
+        } else {
+          image.onload = () => {
+            this.classList.add("image-start--complete");
+          };
+        }
+      }
+    }
+  }
+
+  customElements.define("astro-image-smart", AstroImageSmart);
+</script>
+
+{
+  astroImageProps && astroPlaceholderImageProps && (
+    <astro-image-smart class:list={["image-smart", className]}>
+      <Image
+        class="image-smart__placeholder"
+        {...astroPlaceholderImageProps}
+        loading="eager"
+      />
+      <Picture
+        {...astroImageProps}
+        class="image-smart__image"
+        loading="lazy"
+      />
+    </astro-image-smart>
+  )
+}
+
+<style lang="scss" is:global>
+  .image-smart {
+    display: grid;
+    place-content: center;
+    min-width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+
+    & > * {
+      grid-row: 1;
+      grid-column: 1;
+    }
+
+    img {
+      object-position: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    &__placeholder {
+      object-fit: cover;
+      touch-action: none;
+      pointer-events: none;
+      opacity: 1;
+      z-index: 1;
+      transition: opacity 0.25s 0.15s ease-in;
+
+      img {
+        object-fit: cover;
+      }
+
+      .image-start--complete & {
+        opacity: 0;
+      }
+    }
+
+    &__image {
+      background-color: var(--white);
+      object-fit: contain;
+      opacity: 1;
+    }
+  }
+</style>

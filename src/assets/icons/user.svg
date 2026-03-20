@@ -1,0 +1,38 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 48 48"
+  fill="currentColor"
+>
+  <rect
+    x="1"
+    y="1"
+    width="46"
+    height="46"
+    rx="10"
+    fill="#C3F0CA"
+    stroke="var(--stroke)"
+    stroke-width="var(--border-width)"
+  />
+  <path
+    d="M24 40C32.8366 40 40 32.8366 40 24C40 15.1634 32.8366 8 24 8C15.1634 8 8 15.1634 8 24C8 32.8366 15.1634 40 24 40Z"
+    fill="var(--background-lighter)"
+    stroke="var(--stroke)"
+    stroke-width="var(--border-width)"
+    stroke-linecap="round"
+  />
+  <path
+    d="M21 26C21.3046 26.6082 21.7421 27.1132 22.2687 27.4642C22.7952 27.8152 23.3923 28 24 28C24.6077 28 25.2048 27.8152 25.7313 27.4642C26.2579 27.1132 26.6954 26.6082 27 26"
+    stroke="var(--stroke)"
+    stroke-width="var(--border-width)"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <path
+    d="M19 19.5C19 18.6716 18.3284 18 17.5 18C16.6716 18 16 18.6716 16 19.5C16 20.3284 16.4477 21 17 21H18C18.5523 21 19 20.3284 19 19.5Z"
+    fill="var(--stroke)"
+  />
+  <path
+    d="M32 19.5C32 18.6716 31.3284 18 30.5 18C29.6716 18 29 18.6716 29 19.5C29 20.3284 29.4477 21 30 21H31C31.5523 21 32 20.3284 32 19.5Z"
+    fill="var(--stroke)"
+  />
+</svg>

@@ -1,0 +1,52 @@
+---
+import type { BlockParagraphTranslation } from "@lib/directus/types";
+import FigureSvg from "@components/FigureSvg.astro";
+import ImageSmart from "@components/ImageSmart.astro";
+
+type PropsKeys = `figure_${string}` & keyof BlockParagraphTranslation;
+type Props = Pick<BlockParagraphTranslation, PropsKeys>;
+
+const { figure_image, figure_svg, figure_type, figure_visible } = Astro.props;
+
+const withImage = figure_visible && figure_type === "image" && figure_image;
+const withSvg = figure_visible && figure_type === "svg" && figure_svg;
+---
+
+<div class:list={["figure", `figure--${figure_type}`]}>
+  {
+    withImage && (
+      <ImageSmart
+        class="figure__image"
+        file={figure_image}
+        widths={[264, 320]}
+        quality="max"
+        isDirectusFile
+      />
+    )
+  }
+
+  {withSvg && <FigureSvg name={figure_svg} />}
+</div>
+
+<style lang="scss" is:global>
+  .figure {
+    margin: var(--space-l) auto;
+    max-width: 264px;
+    width: 60%;
+
+    &__image {
+      aspect-ratio: 1/1;
+      border: var(--border);
+      border-radius: 45% 45% 50% 50% / 50% 60% 50% 50%;
+      border-color: var(--stroke);
+      padding: var(--space-3xs);
+      background-color: var(--background-lighter);
+      outline: var(--border);
+      outline-offset: var(--space-3xs);
+      box-shadow: 0px 0px 0px var(--space-3xs) var(--secondary);
+      img {
+        border-radius: 45% 45% 50% 50% / 50% 60% 50% 50%;
+      }
+    }
+  }
+</style>

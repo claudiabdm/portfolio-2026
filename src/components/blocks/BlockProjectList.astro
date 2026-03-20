@@ -1,0 +1,265 @@
+---
+import type { BlockProject as DirectusBlockProject } from "@lib/directus/types";
+import BlockProject from "@components/blocks/BlockProject.astro";
+import BlockProjectFilter from "@components/blocks/BlockProjectFilter.astro";
+import type { CollectionEntry } from "astro:content";
+import SvgIcon from "@components/SvgIcon.astro";
+
+type Props = {
+  blocks: DirectusBlockProject[];
+  meta: Omit<Extract<CollectionEntry<"Pages">["data"], { name: "Projects" }>, "blocks">;
+};
+const {
+  blocks,
+  meta: { total_count_text },
+} = Astro.props;
+
+const tags = [...new Set(blocks.flatMap((b) => b.tags))].filter(Boolean).sort() as string[];
+
+function resolvePlurals(str: string, vars: Record<string, unknown>) {
+  return str.replace(/\{(\w+)\|([^}]*)\}/g, (_, key, suffix) => {
+    const [plural, singular = ""] = suffix.split("|");
+    return Number(vars[key]) === 1 ? singular : plural;
+  });
+}
+
+function splitTemplate(template: string, vars: Record<string, unknown>) {
+  const parts = template.split("{count}");
+
+  return parts
+    .map((part) => part)
+    .filter(Boolean)
+    .map((part) => resolvePlurals(part, vars));
+}
+
+const strings = splitTemplate(total_count_text, { count: blocks.length });
+---
+
+<script>
+  class ProjectList extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      const filter = document.getElementById("projectsFilter") as HTMLFormElement;
+      const projectListUl = document.getElementById("projectList") as HTMLUListElement;
+      const projectsCount = document.getElementById("projectsCount") as HTMLDivElement;
+
+      if (projectListUl == null || projectsCount == null) {
+        return;
+      }
+
+      filter.reset();
+
+      filter?.addEventListener("reset", () => {
+        resetFilter(projectListUl, projectsCount);
+      });
+
+      filter?.addEventListener("input", (e) => {
+        filterProjects(e, projectListUl, projectsCount);
+      });
+    }
+  }
+
+  function filterProjects(e: InputEvent, ul: HTMLUListElement, countEl: HTMLElement) {
+    const input = e.target as HTMLInputElement;
+    const form = input.form;
+    const formData = form && new FormData(form);
+    const activeFilters = [...(formData?.values() ?? [])];
+
+    if (activeFilters.length === 0) {
+      resetFilter(ul, countEl);
+      return;
+    }
+
+    let counter = ul.childElementCount;
+    for (const child of ul.children) {
+      const childLiElem = child as HTMLLIElement;
+      const tagList = childLiElem.dataset.tags;
+      if (activeFilters.some((a) => tagList?.includes(a.toString()))) {
+        showElement(child);
+      } else {
+        hideElement(child);
+        counter -= 1;
+      }
+    }
+    countEl.textContent = String(counter);
+  }
+
+  function resetFilter(ul: HTMLUListElement, countEl: HTMLElement) {
+    for (const child of ul.children) {
+      showElement(child);
+    }
+    countEl.textContent = String(ul.childElementCount);
+  }
+
+  function hideElement(el: Element) {
+    el.classList.remove("projects__li--visible");
+  }
+
+  function showElement(el: Element) {
+    el.classList.add("projects__li--visible");
+  }
+
+  customElements.define("astro-projects", ProjectList);
+</script>
+
+<astro-projects class="projects space-children">
+  <input
+    id="projectsViewToggle"
+    class="projects__view-checkbox sr-only"
+    type="checkbox"
+    value="false"
+  />
+
+  <div class="projects__toolbar">
+    <BlockProjectFilter tags={tags} />
+    <label
+      for="projectsViewToggle"
+      class="projects__view-icons border shadow"
+      aria-label="Toggle project list view"
+    >
+      <SvgIcon
+        class="projects__toolbar-icon"
+        name="grid"
+      />
+      <SvgIcon
+        class="projects__toolbar-icon"
+        name="list"
+      />
+    </label>
+    <div class="projects__count">
+      {strings[0]}
+      <span id="projectsCount">{blocks.length}</span>
+      {strings[1]}
+    </div>
+  </div>
+
+  <ul
+    class="projects__list"
+    id="projectList"
+  >
+    {
+      blocks?.map((project: any) => (
+        <li
+          class="projects__li projects__li--visible"
+          data-tags={project.tags}
+        >
+          <BlockProject {...project} />
+        </li>
+      ))
+    }
+  </ul>
+</astro-projects>
+
+<style lang="scss" is:global>
+  @use "styles/_breakpoints" as *;
+
+  .projects {
+    display: flex;
+    flex-direction: column;
+
+    &__toolbar {
+      display: grid;
+      grid-template-columns: repeat(1, auto);
+      grid-template-rows: repeat(2, auto);
+      justify-content: space-evenly;
+      @media screen and (min-width: $screen-l) {
+        grid-template-columns: repeat(2, auto);
+      }
+
+      &-icon {
+        --icon-size: 38px;
+        padding: 0 var(--space-3xs);
+        color: var(--blue);
+        z-index: 2;
+      }
+    }
+
+    &__view-checkbox {
+      display: none;
+      @media screen and (min-width: $screen-l) {
+        display: unset;
+      }
+    }
+
+    &__view-icons {
+      display: none;
+      position: relative;
+      padding: var(--space-2xs) var(--space-2xs);
+      width: max-content;
+      background-color: var(--purple);
+      box-shadow: var(--shadow);
+
+      &::before {
+        content: "";
+        position: absolute;
+        border: var(--border);
+        border-radius: 10px;
+        width: 38px;
+        height: 38px;
+        background-color: var(--background-lighter);
+        z-index: 1;
+        transition: transform 0.75s
+          linear(0, 0.123 4.4%, 0.87 17.6%, 1.006 21.8%, 1.079 26.2%, 1.096 32.8%, 0.993 56.6%, 1);
+      }
+      // List view when input checked
+      // and only for bigger screens
+      @media screen and (min-width: $screen-l) {
+        display: flex;
+        input[id="projectsViewToggle"]:checked ~ .projects__toolbar &::before {
+          transform: translateX(100%);
+        }
+      }
+    }
+
+    &__count {
+      margin-top: var(--space-xs);
+      width: max-content;
+      color: var(--meta);
+      font-size: var(--font--1);
+      font-weight: 500;
+    }
+
+    &__list {
+      // https://css-tricks.com/responsive-layouts-fewer-media-queries/#aa-control-the-number-of-items-per-row
+      // When column width decreases until min-width, then we switch to one column layout
+      --cols: 2;
+      --min-width: 264px;
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fill,
+        minmax(max(var(--min-width), 100%/ (var(--cols) + 1) + 0.1%), 1fr)
+      );
+      place-content: center;
+      gap: var(--space-2xl);
+      column-gap: var(--space-m-l);
+
+      @media screen and (min-width: $screen-l) {
+        column-gap: var(--space-2xl);
+
+        // List view when input checked
+        // and only for bigger screens
+        input[id="projectsViewToggle"]:checked ~ & {
+          display: block;
+          margin-top: 0;
+        }
+      }
+    }
+
+    &__li {
+      display: none;
+      &--visible {
+        display: unset;
+        @media screen and (min-width: $screen-l) {
+          // List view when input checked
+          // and only for bigger screens
+          input[id="projectsViewToggle"]:checked ~ .projects__list & {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+</style>

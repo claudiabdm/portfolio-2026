@@ -1,0 +1,47 @@
+@font-face {
+  font-family: "Nunito Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url(@fontsource-variable/nunito/files/nunito-latin-wght-normal.woff2)
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Fira Code Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 1000;
+  src: url(@fontsource-variable/fira-code/files/fira-code-latin-wght-normal.woff2)
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --font-family: "Nunito Variable", sans-serif;
+  --font-family-secondary: "Fira Code Variable", monospace;
+
+  /* Step -2: 12.003px */
+  --font--2: 0.7502rem;
+  /* Step -1: 13.3333px */
+  --font--1: 0.8333rem;
+
+  /* @link https://utopia.fyi/type/calculator?c=360,16,1.125,1024,16,1.333,4,0,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+  /* Step 0: 16px → 16px */
+  --font-0: clamp(1rem, 1rem + 0vw, 1rem);
+  /* Step 1: 18px → 21.328px */
+  --font-1: clamp(1.125rem, 1.0122rem + 0.5012vw, 1.333rem);
+  /* Step 2: 20.25px → 28.4302px */
+  --font-2: clamp(1.2656rem, 0.9884rem + 1.232vw, 1.7769rem);
+  /* Step 3: 22.7813px → 37.8975px */
+  --font-3: clamp(1.4238rem, 0.9116rem + 2.2765vw, 2.3686rem);
+  /* Step 4: 25.6289px → 50.5174px */
+  --font-4: clamp(1.6018rem, 0.7584rem + 3.7483vw, 3.1573rem);
+}

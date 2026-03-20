@@ -1,0 +1,191 @@
+---
+import Figure from "@components/Figure.astro";
+import Link from "@components/Link.astro";
+import RichText from "@components/RichText.astro";
+import SocialLinks from "@components/SocialLinks.astro";
+import Title from "@components/Title.astro";
+import type { BlockParagraph, BlockParagraphTranslation } from "@lib/directus/types";
+import { getEntry } from "astro:content";
+
+type Props = BlockParagraph & BlockParagraphTranslation;
+
+const {
+  direction,
+  scroll_hint,
+  title,
+  text,
+  link_name,
+  link_type,
+  link_file,
+  link_url,
+  figure_visible,
+  figure_type,
+  figure_image,
+  figure_svg,
+  figure_social,
+} = Astro.props;
+
+const figure = { figure_visible, figure_type, figure_image, figure_svg, figure_social };
+
+let href = "";
+
+if (link_type === "file" && link_file) {
+  let file = link_file;
+
+  if (typeof link_file == "string") {
+    const entryFile = await getEntry("Files", link_file);
+    if (entryFile) {
+      file = entryFile.data;
+    }
+  }
+
+  if (typeof file !== "string") {
+    href = file.filename_download ?? "";
+  }
+}
+
+if (link_type === "url" && link_url) {
+  href = link_url;
+}
+
+let figureHref = figure_type === "svg" ? figure_svg : figure_image;
+
+if (figureHref && typeof figureHref !== "string") {
+  figureHref = `./src/assets/${figureHref.id}`;
+}
+---
+
+<section
+  class:list={["paragraph", `paragraph--${direction}`, { "paragraph--scroll-hint": scroll_hint }]}
+>
+  <div class="paragraph__content space-children">
+    {figure_social && <SocialLinks />}
+    {
+      title && (
+        <Title
+          class="paragraph__title"
+          level="h2"
+        >
+          {title}
+        </Title>
+      )
+    }
+    <RichText
+      class="paragraph__text"
+      text={text}
+    />
+    {
+      href && (
+        <Link
+          class="paragraph__link"
+          href={href}
+        >
+          {link_name}
+        </Link>
+      )
+    }
+  </div>
+
+  <Figure {...figure} />
+</section>
+
+{
+  scroll_hint && (
+    <hr
+      class="scroll-hint"
+      aria-orientation="vertical"
+    />
+  )
+}
+
+<style lang="scss" is:global>
+  @use "styles/_breakpoints" as *;
+  @use "sass:math";
+
+  $proportion: 60%;
+  :root {
+    --paragraph-space: var(--space-xl);
+
+    @media screen and (min-width: $screen-m) {
+      --paragraph-space: 25vh;
+      --paragraph-gap-x: var(--space-xl);
+    }
+  }
+  .scroll-hint {
+    margin: var(--space-m) auto;
+    border: none;
+    padding-right: var(--paragraph-gap-x);
+    text-align: center;
+
+    @media screen and (min-width: $screen-m) {
+      width: 100% - $proportion;
+      margin-left: 0;
+    }
+
+    &::before,
+    &::after {
+      animation-name: bounce;
+      animation-timing-function: ease-in-out;
+      animation-duration: 1.5s;
+      animation-iteration-count: infinite;
+      animation-direction: alternate-reverse;
+    }
+
+    &::before {
+      content: "scroll";
+      display: inline-block;
+      color: var(--primary);
+      font-family: var(--font-family-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    &::after {
+      content: "";
+      display: block;
+      margin: auto;
+      border-radius: var(--border-radius);
+      width: var(--border-width);
+      height: 50vh;
+      background-color: var(--tertiary);
+      animation-name: bounce, fade;
+    }
+  }
+
+  .paragraph {
+    --proportion: #{$proportion};
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--paragraph-gap-x);
+
+    & + & {
+      margin-top: var(--paragraph-space);
+    }
+
+    @media screen and (min-width: $screen-m) {
+      &--left {
+        flex-direction: row;
+      }
+
+      &--right {
+        flex-direction: row-reverse;
+      }
+    }
+
+    &__content {
+      flex-basis: $proportion;
+      flex-shrink: 0;
+      width: 100%;
+    }
+
+    &__title {
+      font-size: var(--font-3);
+    }
+
+    &__link {
+      width: fit-content;
+    }
+  }
+</style>

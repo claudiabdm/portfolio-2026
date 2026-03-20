@@ -1,0 +1,43 @@
+{
+  "name": "portfolio-2026",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev --host",
+    "build": "astro build",
+    "preview": "astro preview --host",
+    "deploy": "astro build && wrangler pages deploy ./dist",
+    "wrangler": "npm run wrangler",
+    "astro": "astro",
+    "generate:directus-types": "npx tsx --env-file=.env src/lib/directus/scripts/generate-types.ts"
+  },
+  "dependencies": {
+    "astro": "^6.0.6"
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^3.7.1",
+    "@directus/sdk": "^18.0.3",
+    "@fontsource-variable/fira-code": "^5.2.7",
+    "@fontsource-variable/nunito": "^5.2.7",
+    "@vite-pwa/assets-generator": "^1.0.2",
+    "@vite-pwa/astro": "^1.2.0",
+    "baseline-browser-mapping": "^2.9.19",
+    "directus-sdk-typegen": "^0.2.1",
+    "dotenv": "^17.2.3",
+    "highlight.js": "^11.11.1",
+    "marked": "^17.0.4",
+    "marked-highlight": "^2.2.3",
+    "node-html-parser": "^7.1.0",
+    "sass": "^1.98.0",
+    "tsx": "^4.20.6",
+    "vite-plugin-pwa": "^1.2.0",
+    "vite-plugin-svg-sprite-names-typescript": "^1.0.7",
+    "wrangler": "^4.75.0"
+  },
+  "overrides": {
+    "@vite-pwa/astro": {
+      "astro": "$astro"
+    },
+    "serialize-javascript": ">=7.0.3"
+  }
+}

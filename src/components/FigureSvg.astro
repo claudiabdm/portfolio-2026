@@ -1,0 +1,25 @@
+---
+import type { BlockParagraphTranslation } from "@lib/directus/types";
+import SvgChip from "@components/SvgChip.astro";
+import SvgComputer from "./SvgComputer.astro";
+import SvgCamera from "./SvgCamera.astro";
+import SvgCompanies from "./SvgCompanies.astro";
+
+interface Props {
+  name: NonNullable<BlockParagraphTranslation["figure_svg"]>;
+}
+
+const { name } = Astro.props;
+---
+
+{name === "chip" && <SvgChip class="svg-figure" />}
+{name === "camera" && <SvgCamera class="svg-figure" />}
+{name === "computer" && <SvgComputer class="svg-figure" />}
+{name === "companies" && <SvgCompanies class="svg-figure" />}
+
+<style lang="scss" is:global>
+  .svg-figure {
+    display: block;
+    margin: auto;
+  }
+</style>

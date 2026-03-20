@@ -1,0 +1,39 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 48 48"
+  fill="none"
+>
+  <rect
+    x="1"
+    y="1"
+    width="46"
+    height="46"
+    rx="9"
+    fill="currentColor"
+    stroke="var(--stroke)"
+    stroke-width="var(--border-width)"
+    stroke-linecap="round"
+  />
+
+  <path
+    d="M12 36.6207V19"
+    stroke="var(--stroke)"
+    stroke-width="var(--border-width)"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M21 37V28.6429M21 28.6429V19M21 28.6429C21 19 36 19 36 28.6429V37"
+    stroke="var(--stroke)"
+    stroke-width="var(--border-width)"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle
+    cx="1"
+    cy="1"
+    r="1"
+    transform="matrix(-1 0 0 1 13 10)"
+    fill="var(--stroke)"
+  />
+</svg>

@@ -1,0 +1,90 @@
+---
+import { getCollection, getEntries, type CollectionEntry } from "astro:content";
+
+import Navbar from "@components/Navbar.astro";
+import ThemeSwitch from "@components/ThemeSwitch.astro";
+import LangSwitch from "@components/LangSwitch.astro";
+import Title from "@components/Title.astro";
+import { getLangFromUrl } from "@i18n/utils";
+
+type Props = Pick<CollectionEntry<"Pages">["data"], "title" | "name" | "slug">;
+
+const { slug } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+
+const navbarPagesId = await getCollection("Navbar");
+
+const pages = await getEntries(
+  navbarPagesId
+    .sort((a, b) => a.data.sort - b.data.sort)
+    .map((item) => ({
+      ...item.data.id,
+      id: `${item.data.id.id}-${lang}`,
+    })),
+);
+
+const links = pages.filter(Boolean).map((item) => ({
+  name: item.data.name,
+  href: item.data.slug,
+  title: item.data.title,
+  icon: item.data.icon_name,
+}));
+
+const parent = slug ? getParent(slug, links) : { title: "404" };
+const mainTitle = parent?.title;
+const withTitle = parent;
+
+function getParent(slug: string, list: typeof links) {
+  const langPrefix = `/${lang}`;
+  return list.find((link) => {
+    if (slug.startsWith(langPrefix) && link.href.startsWith(langPrefix)) {
+      const slugWithoutLang = slug.slice(langPrefix.length);
+      const linkWithoutLang = link.href.slice(langPrefix.length);
+      return linkWithoutLang != "" && slugWithoutLang.startsWith(linkWithoutLang);
+    }
+    return link.href !== "/" && slug?.startsWith(link.href);
+  });
+}
+---
+
+<header class="header">
+  <LangSwitch />
+  {
+    withTitle && (
+      <Title
+        level="h1"
+        class="header__title"
+      >
+        {mainTitle}
+      </Title>
+    )
+  }
+  <ThemeSwitch />
+  <Navbar links={links} />
+</header>
+
+<style lang="scss" is:global>
+  :root {
+    --header-button-w: 54px;
+    --header-button-h: calc(var(--header-button-w) * 1.5);
+  }
+
+  .header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+
+    & > .lang-switch,
+    & > .switch {
+      flex-shrink: 0;
+    }
+
+    &__title {
+      font-size: var(--font-3);
+      text-transform: capitalize;
+    }
+  }
+</style>

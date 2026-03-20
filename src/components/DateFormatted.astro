@@ -1,0 +1,58 @@
+---
+import { getLangFromUrl } from "@i18n/utils";
+import SvgIcon from "./SvgIcon.astro";
+
+interface Props {
+  text: string;
+  date: Date;
+}
+
+const { text, date } = Astro.props;
+
+const options: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+let dt = new Date(date || new Date());
+
+const lang = getLangFromUrl(Astro.url);
+
+const formatter = new Intl.DateTimeFormat(lang, options);
+
+const localizedDate = formatter.format(dt);
+
+const textPlusSpace = text + " ";
+---
+
+<div class="date">
+  <SvgIcon
+    class="date__icon"
+    name="calendar"
+    size="m"
+  />
+  <span>
+    {textPlusSpace}
+    <time
+      class="date__time"
+      datetime={localizedDate}
+    >
+      {localizedDate}
+    </time>
+  </span>
+</div>
+
+<style lang="scss" is:global>
+  .date {
+    display: inline-flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    font-size: var(--font--1);
+    font-weight: 500;
+    color: var(--meta);
+    & &__icon {
+      --icon-size: 1.4em;
+      margin-right: var(--space-3xs);
+    }
+  }
+</style>
