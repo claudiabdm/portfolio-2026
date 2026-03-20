@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-    site: "https://wwww.claudiabdm.com",
+    site: "https://www.claudiabdm.com",
     devToolbar: {
         'enabled': false
     },
