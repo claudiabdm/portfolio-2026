@@ -39,8 +39,8 @@ $dark-tokens: (
 
 :root {
   color-scheme: light dark;
-  --meta: hsl(var(--primary-hsl) / 0.6);
-  --meta-over-light: hsl(var(--blue-hsl) / 0.6);
+  --meta: hsl(var(--primary-hsl) / 0.7);
+  --meta-over-light: hsl(var(--blue-hsl) / 0.7);
 
   // Add color palette as CSS custom propterties
   @each $name, $value in $colors {
