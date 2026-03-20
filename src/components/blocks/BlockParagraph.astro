@@ -11,6 +11,7 @@ type Props = BlockParagraph & BlockParagraphTranslation;
 
 const {
   direction,
+  flow,
   scroll_hint,
   title,
   text,
@@ -56,7 +57,12 @@ if (figureHref && typeof figureHref !== "string") {
 ---
 
 <section
-  class:list={["paragraph", `paragraph--${direction}`, { "paragraph--scroll-hint": scroll_hint }]}
+  class:list={[
+    "paragraph",
+    `paragraph--${direction}`,
+    `paragraph--${flow}`,
+    { "paragraph--scroll-hint": scroll_hint },
+  ]}
 >
   <div class="paragraph__content space-children">
     {figure_social && <SocialLinks />}
@@ -171,6 +177,19 @@ if (figureHref && typeof figureHref !== "string") {
 
       &--right {
         flex-direction: row-reverse;
+      }
+
+      &--col {
+        gap: 0;
+        margin-inline: auto;
+        max-width: 60ch;
+      }
+      &--col.paragraph--left {
+        flex-direction: column-reverse;
+      }
+      &--col.paragraph--right {
+        flex-direction: column;
+        gap: 0;
       }
     }
 
