@@ -25,6 +25,9 @@
 
   function init() {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!mediaQuery.matches) {
+      initAvatar();
+    }
     mediaQuery.addEventListener("change", () => {
       if (!mediaQuery.matches) {
         initAvatar();
