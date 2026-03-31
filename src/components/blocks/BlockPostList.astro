@@ -95,8 +95,9 @@ const publishedText = (await getEntry("Translations", `publishedOn-${lang}`))?.d
     }
 
     &__link {
-      justify-content: flex-end;
-      width: 100%;
+      width: max-content;
+      margin-inline-end: 0;
+      margin-inline-start: auto;
     }
   }
 </style>
