@@ -15,4 +15,6 @@
     --border-s: 1px solid var(--stroke);
     --shadow-offset-y: 4px;
     --shadow: 0px var(--shadow-offset-y) 0 var(--stroke);
+    --outline: var(--border-width) solid var(--primary);
+    --outline-offset: 0;
 }

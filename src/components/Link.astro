@@ -57,7 +57,10 @@ const target = isSelf ? "_self" : "_blank";
     }
 
     &--active,
-    &:hover {
+    &:hover,
+    &:focus,
+    &:focus-visible {
+      outline: none;
       .link__text {
         text-decoration-color: var(--secondary);
       }
@@ -67,7 +70,7 @@ const target = isSelf ? "_self" : "_blank";
       color: var(--tertiary);
     }
 
-    &:hover &__arrow {
+    :where(&:hover, &:focus, &:focus-visible) &__arrow {
       animation: elastic 0.75s linear forwards;
     }
   }

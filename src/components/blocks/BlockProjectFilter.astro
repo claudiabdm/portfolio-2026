@@ -32,7 +32,7 @@ const { tags = [] } = Astro.props;
         tags?.map((tag) => (
           <div class="projects-filter__inner">
             <input
-              class="sr-only"
+              class="projects-filter__checkbox sr-only"
               type="checkbox"
               name="projects-filter"
               value={tag}
@@ -112,6 +112,7 @@ const { tags = [] } = Astro.props;
     }
 
     &__inner {
+      position: relative;
       border-radius: var(--border-radius);
       width: max-content;
       height: 100%;
@@ -150,6 +151,12 @@ const { tags = [] } = Astro.props;
         height: 12px;
         background-color: var(--background);
         transition: background-color 0.15s linear;
+      }
+
+      :where(.projects-filter__checkbox:focus, .projects-filter__checkbox:focus-visible) ~ & {
+        outline: var(--outline);
+        outline-offset: calc(var(--outline-offset));
+        transform: translateY(-3px);
       }
 
       @media (hover: hover) and (pointer: fine) {

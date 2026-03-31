@@ -117,7 +117,7 @@ const strings = splitTemplate(total_count_text, { count: blocks.length });
     <BlockProjectFilter tags={tags} />
     <label
       for="projectsViewToggle"
-      class="projects__view-icons border shadow"
+      class="projects__view-toggle border shadow"
       aria-label="Toggle project list view"
     >
       <SvgIcon
@@ -184,7 +184,7 @@ const strings = splitTemplate(total_count_text, { count: blocks.length });
       }
     }
 
-    &__view-icons {
+    &__view-toggle {
       display: none;
       position: relative;
       padding: var(--space-2xs) var(--space-2xs);
@@ -204,6 +204,14 @@ const strings = splitTemplate(total_count_text, { count: blocks.length });
         transition: transform 0.75s
           linear(0, 0.123 4.4%, 0.87 17.6%, 1.006 21.8%, 1.079 26.2%, 1.096 32.8%, 0.993 56.6%, 1);
       }
+
+      :where(.projects__view-checkbox:focus, .projects__view-checkbox:focus-visible)
+        ~ .projects__toolbar
+        & {
+        outline: var(--outline);
+        outline-offset: calc(var(--outline-offset));
+      }
+
       // List view when input checked
       // and only for bigger screens
       @media screen and (min-width: $screen-l) {

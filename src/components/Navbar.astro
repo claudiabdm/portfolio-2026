@@ -99,12 +99,12 @@ function isLinkActive(link: (typeof links)[number]) {
     }
 
     &__link {
-      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
       color: var(--primary);
       text-decoration: none;
+      outline: none;
     }
 
     &__point {
@@ -125,6 +125,7 @@ function isLinkActive(link: (typeof links)[number]) {
     &__inner {
       display: flex;
       justify-content: center;
+      border-radius: var(--border-radius);
       transform: translate3d(0, var(--navbar-icon-y), 0);
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -132,9 +133,17 @@ function isLinkActive(link: (typeof links)[number]) {
         transform: translate3d(0, var(--navbar-icon-y-active), 0);
       }
 
+      :where(.links__link:focus, .links__link:focus-visible) & {
+        outline: var(--outline);
+        outline-offset: var(--outline-offset);
+        background-color: var(--primary);
+      }
+      :where(.links__link:focus, .links__link:focus-visible):not(.links__link--active) & {
+        transform: translate3d(0, var(--navbar-icon-y-hover), 0);
+      }
+
       @media (hover: hover) and (pointer: fine) {
-        .links__link:hover:not(.links__link--active) &,
-        .links__link:active:not(.links__link--active) & {
+        :where(.links__link:hover, .links__link:active):not(.links__link--active) & {
           transform: translate3d(0, var(--navbar-icon-y-hover), 0);
         }
       }
@@ -147,7 +156,7 @@ function isLinkActive(link: (typeof links)[number]) {
     &__name {
       display: block;
       position: absolute;
-      top: calc(-1 * 32px);
+      top: calc(-1 * 34px);
       border-radius: 8px;
       padding: 2px 6px;
       white-space: nowrap;
@@ -158,8 +167,13 @@ function isLinkActive(link: (typeof links)[number]) {
       transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 
       @media (hover: hover) and (pointer: fine) {
-        .links__link--active &,
-        .links__link:hover & {
+        :where(
+            .links__link:focus,
+            .links__link:focus-visible,
+            .links__link--active,
+            .links__link:hover
+          )
+          & {
           opacity: 1;
         }
       }
