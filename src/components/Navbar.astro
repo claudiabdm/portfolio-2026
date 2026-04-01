@@ -133,12 +133,12 @@ function isLinkActive(link: (typeof links)[number]) {
         transform: translate3d(0, var(--navbar-icon-y-active), 0);
       }
 
-      :where(.links__link:focus, .links__link:focus-visible) & {
+      .links__link:focus-visible & {
         outline: var(--outline);
         outline-offset: var(--outline-offset);
         background-color: var(--primary);
       }
-      :where(.links__link:focus, .links__link:focus-visible):not(.links__link--active) & {
+      .links__link:focus-visible:not(.links__link--active) & {
         transform: translate3d(0, var(--navbar-icon-y-hover), 0);
       }
 
@@ -167,13 +167,7 @@ function isLinkActive(link: (typeof links)[number]) {
       transition: opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 
       @media (hover: hover) and (pointer: fine) {
-        :where(
-            .links__link:focus,
-            .links__link:focus-visible,
-            .links__link--active,
-            .links__link:hover
-          )
-          & {
+        :where(.links__link:focus-visible, .links__link--active, .links__link:hover) & {
           opacity: 1;
         }
       }

@@ -205,9 +205,7 @@ const strings = splitTemplate(total_count_text, { count: blocks.length });
           linear(0, 0.123 4.4%, 0.87 17.6%, 1.006 21.8%, 1.079 26.2%, 1.096 32.8%, 0.993 56.6%, 1);
       }
 
-      :where(.projects__view-checkbox:focus, .projects__view-checkbox:focus-visible)
-        ~ .projects__toolbar
-        & {
+      .projects__view-checkbox:focus-visible ~ .projects__toolbar & {
         outline: var(--outline);
         outline-offset: calc(var(--outline-offset));
       }

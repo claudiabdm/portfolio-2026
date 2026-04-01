@@ -153,7 +153,7 @@ const { tags = [] } = Astro.props;
         transition: background-color 0.15s linear;
       }
 
-      :where(.projects-filter__checkbox:focus, .projects-filter__checkbox:focus-visible) ~ & {
+      .projects-filter__checkbox:focus-visible ~ & {
         outline: var(--outline);
         outline-offset: calc(var(--outline-offset));
         transform: translateY(-3px);
